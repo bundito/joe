@@ -1,51 +1,55 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-"""
-ZetCode PyQt4 tutorial
-
-In this example, we connect a signal
-of a QtGui.QSlider to a slot
-of a QtGui.QLCDNumber.
-
-author: Jan Bodnar
-website: zetcode.com
-last edited: October 2011
-"""
+#!/usr/bin/python3
 
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QGroupBox, QDialog, QVBoxLayout, \
+    QGridLayout
+from PyQt5.QtCore import pyqtSlot
 
+from DirListing import Listing
 
-class Example(QtGui.QWidget):
+class ButtonTest(QDialog):
     def __init__(self):
-        super(Example, self).__init__()
-
+        super(ButtonTest, self).__init__()
+        self.top = 10
+        self.left = 10
+        self.width = 320
+        self.height = 500
         self.initUI()
 
     def initUI(self):
-        lcd = QtGui.QLCDNumber(self)
-        sld = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        self.setWindowTitle("Directory Buttons")
+        self.setGeometry(self.left, self.top, self.width, self.height)
 
-        vbox = QtGui.QVBoxLayout()
-        vbox.addWidget(lcd)
-        vbox.addWidget(sld)
+        self.createGridLayout()
 
-        self.setLayout(vbox)
-        sld.valueChanged.connect(lcd.display)
+        windowLayout = QVBoxLayout()
+        windowLayout.addWidget(self.horizontalGroupBox)
+        self.setLayout(windowLayout)
 
-        self.setGeometry(300, 300, 250, 150)
-        self.setWindowTitle('Signal & slot')
         self.show()
 
+    def createGridLayout(self):
+        self.horizontalGroupBox = QGroupBox("Joe")
+        layout = QGridLayout()
 
+        counter = 0
 
+        for obj in Listing:
+            button = QPushButton(obj.filename)
+            button.clicked.connect(self.on_click)
+            layout.addWidget(button, counter, 0)
 
-def main():
-    app = QtGui.QApplication(sys.argv)
-    ex = Example()
-    sys.exit(app.exec_())
+            counter = counter + 1
+
+        self.horizontalGroupBox.setLayout(layout)
+
+    @pyqtSlot()
+    def on_click(self):
+        print('PyQt5 button click')
 
 
 if __name__ == '__main__':
-    main()
+    app = QApplication(sys.argv)
+    ex = ButtonTest()
+    sys.exit(app.exec_())
+

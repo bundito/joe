@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QGr
     QGridLayout, QButtonGroup
 from PyQt5.QtCore import *
 
-from DirListing import Listing
+from DownloadListing import Listing
 
 
 class App(QDialog):
@@ -15,6 +15,7 @@ class App(QDialog):
         self.width = 320
         self.height = 500
         self.initUI()
+
 
     def initUI(self):
         self.setWindowTitle(self.title)

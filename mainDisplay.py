@@ -7,14 +7,13 @@ from PyQt5.QtCore import pyqtSlot
 
 from DownloadListing import Listing
 
-#print(len(Listing))
-
 class ButtonTest(QDialog):
+
     def __init__(self):
         super(ButtonTest, self).__init__()
         self.top = 10
         self.left = 10
-        self.width = 320
+        self.width = 500
         self.height = 600
         self.initUI()
 
@@ -33,20 +32,33 @@ class ButtonTest(QDialog):
         counter = 0
 
         buttonHeight = (self.height / len(Listing)) - 20
+        buttonHeight = 50
 
         for obj in Listing:
-            button = QPushButton(obj.filename)
-            button.clicked.connect(lambda checked, filename=obj.filename: self.on_click(filename))
-            button.setMinimumHeight(buttonHeight)
-            button.isFlat()
-            layout.addWidget(button, counter, 0)
+            runbutton = QPushButton(obj.filename[0:20])
+            runbutton.clicked.connect(lambda checked, filename=obj.filename: self.on_runclick(filename))
+            runbutton.setMinimumHeight(buttonHeight)
+            #runbutton.setFlat(True)
+
+            trashbutton = QPushButton("D")
+            trashbutton.clicked.connect(lambda checked, filename=obj.filename: self.on_delclick(filename))
+            #trashbutton.setMinimumHeight(buttonHeight)
+            trashbutton.isFlat()
+
+            layout.addWidget(runbutton, counter, 0, 1, 4)
+            layout.addWidget(trashbutton, counter, 5, 1, 1)
+
             counter = counter + 1
 
         self.horizontalGroupBox.setLayout(layout)
 
     @pyqtSlot()
-    def on_click(self, filename):
-        print(filename)
+    def on_runclick(self, filename):
+        print("process %s" % filename)
+
+    @pyqtSlot()
+    def on_delclick(self, filename):
+        print("rm -rf %s" % filename)
 
 
 if __name__ == '__main__':

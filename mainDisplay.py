@@ -29,17 +29,25 @@ class ButtonTest(QDialog):
     def initUI(self):
         self.setWindowTitle("Directory Buttons")
         self.setGeometry(self.left, self.top, self.width, self.height)
-        self.createListingLayout()
-
         windowLayout = QVBoxLayout()
+
+        self.createListingLayout()
         windowLayout.addWidget(self.horizontalGroupBox)
+
+        windowLayout.addStretch(2)
+
+        self.createUtilLayout()
+        windowLayout.addWidget(self.horizontalGroupBox)
+
         self.setLayout(windowLayout)
 
         self.show()
 
+    itemlayout = QGridLayout()
+
     def createListingLayout(self):
         self.horizontalGroupBox = QGroupBox("Joe")
-        layout = QGridLayout()
+
         counter = 0
 
         for obj in Listing:
@@ -49,30 +57,38 @@ class ButtonTest(QDialog):
 
             trashbutton = QPushButton()
             trashbutton.setIcon(QIcon('./bw-trash-clipart.gif'))
-            trashbutton.clicked.connect(lambda checked, filename=obj.filename: self.on_delclick(filename))
+            trashbutton.clicked.connect(lambda checked, count = counter: self.on_delclick(count))
             trashbutton.setMaximumHeight(buttonHeight)
             trashbutton.setMaximumWidth(buttonHeight)
 
-            layout.addWidget(runbutton, counter, 0, 1, 4)
-            layout.addWidget(trashbutton, counter, 5, 1, 1)
+            self.itemlayout.addWidget(runbutton, counter, 0, 1, 4)
+            self.itemlayout.addWidget(trashbutton, counter, 5, 1, 1)
 
             counter = counter + 1
 
-        self.horizontalGroupBox.setLayout(layout)
-    #
-    # def createUtilLayout(self):
-    #     self.horizontalGroupBox = QGroupBox("Utils")
-    #     utilLayout = QGridLayout()
-    #
-    #     configButton = QPushButton("Config")
-    #     revertButton = QPushButton("Revert")
-    #     quitButton = QPushButton("Quit")
-    #
-    #     utilLayout.addwidget(configButton, 0, 0)
-    #     utilLayout.addWidget(revertButton, 0, 1)
-    #     utilLayout.addWidget(quitButton, 0, 2)
+        self.horizontalGroupBox.setLayout(self.itemlayout)
 
-    #self.horizontalGroupBox.setLayout(utilLayout)
+    def removeItem(self, rowNumber):
+        removeTitle = self.itemlayout.itemAtPosition(rowNumber, 0)
+        removeTrash = self.itemlayout.itemAtPosition(rowNumber, 5)
+        self.itemlayout.removeItem(removeTitle)
+        self.itemlayout.removeItem(removeTrash)
+        removeTitle.widget().deleteLater()
+        removeTrash.widget().deleteLater()
+
+    def createUtilLayout(self):
+         self.horizontalGroupBox = QGroupBox("Utils")
+         layout = QGridLayout()
+
+         configButton = QPushButton("Config")
+         revertButton = QPushButton("Revert")
+         quitButton = QPushButton("Quit")
+
+         layout.addWidget(configButton, 0, 0)
+         layout.addWidget(revertButton, 0, 1)
+         layout.addWidget(quitButton, 0, 2)
+
+         self.horizontalGroupBox.setLayout(layout)
 
 
     @pyqtSlot()
@@ -83,12 +99,15 @@ class ButtonTest(QDialog):
     @pyqtSlot()
     def on_delclick(self, filename):
         print("rm -rf %s" % filename)
+        self.removeItem(filename)
+
 
 
 def picklepass(fname):
     for x in Listing:
         if x.filename == fname:
             golden = x
+            break
 
     kosher = pickle.dumps(golden)
     parser.sendquery(kosher, "-rename")

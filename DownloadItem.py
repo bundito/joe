@@ -9,4 +9,8 @@ class DownloadItem:
         self.filename = os.path.basename(path)
         self.fullpath = path
         self.type = ""
+        self.title = ""
+        self.episodes = ""
+        self.destdir = ""
+
 

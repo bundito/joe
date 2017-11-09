@@ -4,80 +4,94 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QGroupBox, QDialog, QVBoxLayout, \
     QGridLayout, QAbstractButton
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QPainter, QPixmap
+from PyQt5.QtGui import QPainter, QPixmap, QIcon
 
 from DownloadListing import Listing
 
+import parser
+import pickle
 
-
-class PicButton(QAbstractButton):
-    def __init__(self, pixmap, parent=None):
-        super(PicButton, self).__init__(parent)
-        self.pixmap = pixmap
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.drawPixmap(event.rect(), self.pixmap)
-
-    def sizeHint(self):
-        return self.pixmap.size()
-
-
+buttonHeight = 50
 
 class ButtonTest(QDialog):
 
     def __init__(self):
         super(ButtonTest, self).__init__()
+
+        app_height = (buttonHeight + 10) * len(Listing)
+
         self.top = 10
         self.left = 10
         self.width = 500
-        self.height = 600
+        self.height = app_height
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle("Directory Buttons")
         self.setGeometry(self.left, self.top, self.width, self.height)
-        self.createGridLayout()
+        self.createListingLayout()
+
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(self.horizontalGroupBox)
         self.setLayout(windowLayout)
+
         self.show()
 
-    def createGridLayout(self):
+    def createListingLayout(self):
         self.horizontalGroupBox = QGroupBox("Joe")
         layout = QGridLayout()
         counter = 0
 
-        buttonHeight = (self.height / len(Listing)) - 20
-        buttonHeight = 50
-
         for obj in Listing:
-            runbutton = QPushButton(obj.filename[0:20])
+            runbutton = QPushButton(obj.filename)
             runbutton.clicked.connect(lambda checked, filename=obj.filename: self.on_runclick(filename))
             runbutton.setMinimumHeight(buttonHeight)
-            #runbutton.setFlat(True)
 
-
-            trashbutton = PicButton(QPixmap('./trash_can.png'))
-
+            trashbutton = QPushButton()
+            trashbutton.setIcon(QIcon('./bw-trash-clipart.gif'))
             trashbutton.clicked.connect(lambda checked, filename=obj.filename: self.on_delclick(filename))
-            #trashbutton.resize(50,50)
-            trashbutton.setMaximumHeight(50)
-            trashbutton.setMaximumWidth(50)
+            trashbutton.setMaximumHeight(buttonHeight)
+            trashbutton.setMaximumWidth(buttonHeight)
+
             layout.addWidget(runbutton, counter, 0, 1, 4)
             layout.addWidget(trashbutton, counter, 5, 1, 1)
 
             counter = counter + 1
 
         self.horizontalGroupBox.setLayout(layout)
+    #
+    # def createUtilLayout(self):
+    #     self.horizontalGroupBox = QGroupBox("Utils")
+    #     utilLayout = QGridLayout()
+    #
+    #     configButton = QPushButton("Config")
+    #     revertButton = QPushButton("Revert")
+    #     quitButton = QPushButton("Quit")
+    #
+    #     utilLayout.addwidget(configButton, 0, 0)
+    #     utilLayout.addWidget(revertButton, 0, 1)
+    #     utilLayout.addWidget(quitButton, 0, 2)
+
+    #self.horizontalGroupBox.setLayout(utilLayout)
+
 
     @pyqtSlot()
     def on_runclick(self, filename):
         print("process %s" % filename)
+        picklepass(filename)
 
     @pyqtSlot()
     def on_delclick(self, filename):
         print("rm -rf %s" % filename)
+
+
+def picklepass(fname):
+    for x in Listing:
+        if x.filename == fname:
+            golden = x
+
+    kosher = pickle.dumps(golden)
+    parser.sendquery(kosher, "-rename")
 
 
 if __name__ == '__main__':

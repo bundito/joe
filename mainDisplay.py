@@ -2,10 +2,27 @@
 
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QGroupBox, QDialog, QVBoxLayout, \
-    QGridLayout
+    QGridLayout, QAbstractButton
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QPainter, QPixmap
 
 from DownloadListing import Listing
+
+
+
+class PicButton(QAbstractButton):
+    def __init__(self, pixmap, parent=None):
+        super(PicButton, self).__init__(parent)
+        self.pixmap = pixmap
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.drawPixmap(event.rect(), self.pixmap)
+
+    def sizeHint(self):
+        return self.pixmap.size()
+
+
 
 class ButtonTest(QDialog):
 
@@ -40,11 +57,13 @@ class ButtonTest(QDialog):
             runbutton.setMinimumHeight(buttonHeight)
             #runbutton.setFlat(True)
 
-            trashbutton = QPushButton("D")
-            trashbutton.clicked.connect(lambda checked, filename=obj.filename: self.on_delclick(filename))
-            #trashbutton.setMinimumHeight(buttonHeight)
-            trashbutton.isFlat()
 
+            trashbutton = PicButton(QPixmap('./trash_can.png'))
+
+            trashbutton.clicked.connect(lambda checked, filename=obj.filename: self.on_delclick(filename))
+            #trashbutton.resize(50,50)
+            trashbutton.setMaximumHeight(50)
+            trashbutton.setMaximumWidth(50)
             layout.addWidget(runbutton, counter, 0, 1, 4)
             layout.addWidget(trashbutton, counter, 5, 1, 1)
 

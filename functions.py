@@ -149,7 +149,7 @@ def display_movie(data):
 # -------------------------------------
 
 def display_tv(data, parm1):
-    # cfg = config
+    # cfg = configread
     episodes = []
     episodecount = 0
 

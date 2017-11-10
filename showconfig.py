@@ -1,13 +1,35 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QFileDialog, QWidget
 from ui_joeconfig import Ui_Configuration
+import config
 from config import cfg
-
 
 app = QApplication(sys.argv)
 window = QMainWindow()
 ui = Ui_Configuration()
 ui.setupUi(window)
+
+
+def save_and_close():
+    cfg['mediadirs']['TV'] = ui.tvEdit.text()
+    cfg['mediadirs']['Movies'] = ui.moviesEdit.text()
+    cfg['mediadirs']['Downloads'] = ui.downloadEdit.text()
+
+    cfg['system_vars']['ProgramName'] = ui.prognameEdit.text()
+    cfg['system_vars']['ProgramVer'] = ui.versionEdit.text()
+    cfg['system_vars']['FilebotLoc'] = ui.filebotLocEdit.text()
+    cfg['system_vars']['LogDir'] = ui.logDirEntry.text()
+
+    if ui.testmodeCheck.isChecked() == True:
+        cfg['system_vars']['DebugMode'] = 'True'
+    else:
+        cfg['system_vars']['DebugMode'] = 'False'
+
+    config.write_complete_config(cfg)
+
+    window.close()
+
+
 
 # Set labels and populate text boxes
 ui.dialogTitle.setText("%s %s" % (cfg['system_vars']['ProgramName'], cfg['system_vars']['ProgramVer']))
@@ -36,7 +58,7 @@ ui.logLocationChooser.clicked.connect(lambda checked, src="log": chooseDir(src))
 ui.filebotChooser.clicked.connect(lambda checked, src="fb": chooseFile(src))
 
 ui.cancelButton.clicked.connect(window.close)
-ui.okButton.clicked.connect(save_and_close())
+ui.okButton.clicked.connect(lambda checked, src="fb": save_and_close())
 
 # Directory and file choose dialog popups
 def chooseDir(loc):
@@ -58,9 +80,10 @@ def chooseFile(src):
     if src == "fb":
         ui.filebotLocEdit.setText(filename[0])
 
-# save the changed config and close the dialog box.
-def save_and_close():
-    cfg['']
+
+# save the changed configread and close the dialog box.
+
+
 
 
 

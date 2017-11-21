@@ -8,6 +8,9 @@ config.read(cfg_file)
 
 cfg = config
 
+print("XXX")
+print(cfg)
+print("XXX")
 
 def reread_config():
     cfg_file = "joe.conf"

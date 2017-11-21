@@ -2,6 +2,7 @@ import sys
 
 from PyQt5.QtCore import QSize, QRect, pyqtSlot, QPropertyAnimation, QObject, QCoreApplication, QTimer
 from PyQt5.QtGui import QIcon, QPixmap, QCursor
+from PyQt5.Qt import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout, QWidget, QPushButton, \
     QSizePolicy, QSpacerItem, QDialog, QFrame
 #from Ui_config_dialog import Ui_configDialog as Form
@@ -69,7 +70,7 @@ while counter < max:
     #ui.labelbutton.setMinimumSize(QSize(315, 50))
     #ui.labelbutton.setGeometry(QRect(0,0,315,50))
     ui.labelbutton.setStyleSheet("QPushButton {background: white; border 1px solid black}\n"
-                                     "QPushButton.pushed {background: #a6a6a6}")
+"QPushButton.pushed {background: #a6a6a6}")
     ui.labelbutton.setObjectName(dlObject)
     ui.labelbutton.setText(dlObject)
     ui.labelbutton.setObjectName("labelbutton_%s" % counter)
@@ -84,7 +85,7 @@ while counter < max:
     ui.trashbutton.setMinimumSize(QSize(50, 50))
     ui.trashbutton.setMaximumSize(QSize(50, 50))
     ui.trashbutton.setStyleSheet("QPushButton {background: white; border 1px solid black}\n"
-                                     "QPushButton.pushed {background: #a6a6a6}")
+"QPushButton.pushed {background: #a6a6a6}")
     ui.trashbutton.setText("")
     icon = QIcon()
     icon.addPixmap(QPixmap("bw-trash-clipart.gif"), QIcon.Normal, QIcon.Off)
@@ -106,13 +107,18 @@ ui.scrollArea.setWidget(ui.scrollAreaWidgetContents)
 
 @pyqtSlot()
 def process_item(rownumber):
+    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
     message = []
     item_name = Listing[rownumber]
     message.append("rename")
     message.append(item_name)
-    joe_sender.sendmessage(message)
+    retval = joe_sender.sendmessage(message)
+    print(retval)
+    delete_row(rownumber)
+    QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
 
-def anim(self):
+
+def anim_delete(self):
     animation = QPropertyAnimation(self, b'maximumSize')
     animation.setDuration(750)
     animation.setStartValue(QSize(315, 50))
@@ -144,23 +150,12 @@ def delete_row(rownumber):
     ###----- Visual (delete from grid ------###
 
     qWTitle = ui.itemGrid2.itemAtPosition(rownumber,0)
-    #qWTrash = ui.itemGrid2.itemAtPosition(rownumber,2)
-
     # peel back another layer of abstraction
     widgetTitle = qWTitle.widget()
-    #widgetTrash = qWTrash.widget()
 
-    anim(widgetTitle)
+    anim_delete(widgetTitle)
 
     QTimer.singleShot(750, lambda: destroy(rownumber))
-    #ui.itemGrid2.removeWidget(widgetTitle)
-    #ui.itemGrid2.removeWidget(widgetTrash)
-
-    # destroy! (later)
-    #widgetTitle.deleteLater()
-    #widgetTrash.deleteLater()
-
-
 
     # shrink the underlying scroll panel so it stays proportional
     # (it's nothing more than a plain old widget)

@@ -55,8 +55,10 @@ def analyze(lines):
             db = db.group(1)
             if db == "TheTVDB":
                 type = "tv"
+                linedata['type'] = "tv"
             elif db == "TheMovieDB":
                 type = "movie"
+                linedata['type'] = "movie"
             else:
                 type = "other"
 
@@ -103,6 +105,7 @@ def analyze(lines):
 
     # assign parsed bits appropriate for TV show
     if linedata['type'] == "tv":
+        filedata['type'] = "tv"
         filedata['episodes'] = []
         for ep in episode_names:
             parts = os.path.splitext(ep)
@@ -117,6 +120,7 @@ def analyze(lines):
 
     # assign parsed data for movie entry
     if type == "movie":
+        filedata['type'] = "movie"
         filedata['path'] = linedata['path']
         filedata['title'] = linedata['moveskip']
 
@@ -125,10 +129,13 @@ def analyze(lines):
         filedata['opts'] = opts
 
     else:
+        print("tv filedata = ")
         print(filedata)
         return filedata
 
-
+    print("filedata = ")
+    print(filedata)
+    return filedata
 
 def sendquery(verb, parm1, q=""):
     lines = []
@@ -169,4 +176,5 @@ def sendquery(verb, parm1, q=""):
 
     # done, pass the array back
     print(line)
-    analyze(lines)
+    filedata = analyze(lines)
+    return filedata

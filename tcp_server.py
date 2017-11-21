@@ -28,14 +28,20 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             for fileobj in DownloadListing.Listing:
                 fname = fileobj.filename
                 message.append(fname)
-            message = pickle.dumps(message)
-            #message.encode('utf-8')
-            msg = struct.pack('>I', len(message)) + message
-            self.request.sendall(msg)
+            self.xmit_reponse(message)
 
         if query_data[0] == "rename":
             title = query_data[1]
+            bundle = {}
             bundle = analyzetitle.sendquery("-rename", title)
+            print("Bundle = ")
+            print(bundle)
+            self.xmit_reponse(bundle)
+
+    def xmit_reponse(self, msg):
+        message = pickle.dumps(msg)
+        msg = struct.pack('>I', len(message)) + message
+        self.request.sendall(msg)
 
 
 if __name__ == "__main__":
